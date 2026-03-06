@@ -5,6 +5,8 @@ import com.passly.auth.dto.LoginRequest;
 import com.passly.auth.dto.RefreshTokenRequest;
 import com.passly.auth.dto.RegisterRequest;
 import com.passly.common.exception.EmailAlreadyExistsException;
+import com.passly.common.exception.InvalidTokenException;
+import com.passly.common.exception.ResourceNotFoundException;
 import com.passly.instructor.InstructorProfile;
 import com.passly.instructor.InstructorProfileRepository;
 import com.passly.learner.LearnerProfile;
@@ -64,16 +66,18 @@ public class AuthService {
         authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(request.email(), request.password())
         );
-        User user = userRepository.findByEmail(request.email()).orElseThrow();
+        User user = userRepository.findByEmail(request.email())
+                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
         return issueTokens(user);
     }
 
     public AuthResponse refresh(RefreshTokenRequest request) {
         if (!jwtUtils.isValid(request.refreshToken())) {
-            throw new IllegalArgumentException("Invalid or expired refresh token");
+            throw new InvalidTokenException("Invalid or expired refresh token");
         }
         String email = jwtUtils.extractEmail(request.refreshToken());
-        User user = userRepository.findByEmail(email).orElseThrow();
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
         return issueTokens(user);
     }
 
