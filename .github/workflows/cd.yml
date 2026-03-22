@@ -32,4 +32,4 @@ jobs:
           environment_name: passly-backend-env
           region: ${{ secrets.AWS_REGION }}
           version_label: v-${{ github.run_number }}
-          deployment_package: backend/target/*.jar
+          deployment_package: backend/target/passly-backend-0.0.1-SNAPSHOT.jar
