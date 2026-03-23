@@ -31,6 +31,11 @@ public class AuthController {
     public AuthResponse refresh(@Valid @RequestBody RefreshTokenRequest request) {
         return authService.refresh(request);
     }
+
+    @GetMapping("/")
+    public String home() {
+        return "APP RUNNING";
+    }
 }
 
 
